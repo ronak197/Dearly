@@ -118,9 +118,7 @@ class _CallPageState extends State<CallPage> {
   /// Helper function to get list of native views
   List<Widget> _getRenderViews() {
     List<Widget> list = [AgoraRenderWidget(0, local: true, preview: true)];
-    _users.forEach((int uid) => {
-      list.add(AgoraRenderWidget(uid))
-    });
+    _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
     return list;
   }
 
@@ -280,7 +278,12 @@ class _CallPageState extends State<CallPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Agora Flutter QuickStart'),
+            elevation: 0.0,
+            backgroundColor: Colors.black,
+            title: Text('Dearly', style: TextStyle(fontFamily: 'Pacifico', color: Colors.white, fontSize: 25.0), ),
+          centerTitle: true,
+          titleSpacing: 0.0,
+
         ),
         backgroundColor: Colors.black,
         body: Center(

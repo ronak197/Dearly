@@ -49,6 +49,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
             height: 35.0,
             width: 35.0,
             child: FloatingActionButton(
+              heroTag: '1',
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 backgroundColor: Colors.white,
                 child: Text('?', style: TextStyle(color: Color(0xff6A47F7), fontSize: 20.0, fontWeight: FontWeight.bold),),
@@ -62,6 +63,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
             height: 70.0,
             width: 70.0,
             child: FloatingActionButton(
+              heroTag: '2',
               materialTapTargetSize: MaterialTapTargetSize.padded,
               backgroundColor: Color(0xff6A47F7),
               child: Image.asset('assets/mic_icon.png', height: 35.0,),
@@ -94,6 +96,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
             height: 35.0,
             width: 35.0,
             child: FloatingActionButton(
+              heroTag: '3',
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 backgroundColor: Colors.white,
                 child: Icon(Icons.keyboard, color: Color(0xff6A47F7),),

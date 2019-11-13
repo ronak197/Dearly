@@ -1,3 +1,4 @@
+import 'package:dearly/src/pages/index.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_api/youtube_api.dart';
 
@@ -166,10 +167,18 @@ class _MessageViewState extends State<MessageView> with ListPopupTap<MessageView
 
 class ContactMessage extends StatelessWidget {
 
-  final String contactName;
-  final String contactPhoneNumber;
+  String contactName;
+  String contactPhoneNumber;
 
   ContactMessage({this.contactName,this.contactPhoneNumber});
+
+  String getChannelName(){
+    contactPhoneNumber = contactPhoneNumber.replaceAll('-', '').replaceAll(' ', '');
+    int len = contactPhoneNumber.length;
+    contactPhoneNumber = contactPhoneNumber.substring(len-10);
+    print(contactPhoneNumber);
+    return (int.parse('9879593420') + int.parse('$contactPhoneNumber')).toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,13 +266,7 @@ class ContactMessage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => CallPage(
-                                    channelName:
-                                    '9879593420'
-                                    + '+' +
-                                        contactPhoneNumber
-                                            .replaceAll('-', '')
-                                            .replaceAll(' ', '')
-                                            .substring(contactPhoneNumber.length-10),
+                                    channelName: getChannelName(),
                                   )));
                         },
                         child: Container(

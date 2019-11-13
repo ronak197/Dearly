@@ -4,12 +4,11 @@ import './call.dart';
 
 class IndexPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return new IndexState();
-  }
+  _IndexPageState createState() => _IndexPageState();
 }
 
-class IndexState extends State<IndexPage> {
+class _IndexPageState extends State<IndexPage> {
+
   /// create a channelController to retrieve text value
   final _channelController = TextEditingController();
 
@@ -39,15 +38,15 @@ class IndexState extends State<IndexPage> {
                   Row(children: <Widget>[
                     Expanded(
                         child: TextField(
-                      controller: _channelController,
-                      decoration: InputDecoration(
-                          errorText: _validateError
-                              ? "Channel name is mandatory"
-                              : null,
-                          border: UnderlineInputBorder(
-                              borderSide: BorderSide(width: 1)),
-                          hintText: 'Channel name'),
-                    ))
+                          controller: _channelController,
+                          decoration: InputDecoration(
+                              errorText: _validateError
+                                  ? "Channel name is mandatory"
+                                  : null,
+                              border: UnderlineInputBorder(
+                                  borderSide: BorderSide(width: 1)),
+                              hintText: 'Channel name'),
+                        ))
                   ]),
                   Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
@@ -83,8 +82,8 @@ class IndexState extends State<IndexPage> {
           context,
           MaterialPageRoute(
               builder: (context) => new CallPage(
-                    channelName: _channelController.text,
-                  )));
+                channelName: _channelController.text,
+              )));
     }
   }
 
