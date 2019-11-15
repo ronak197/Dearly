@@ -1,3 +1,4 @@
+import 'package:dearly/call_logs.dart';
 import 'package:dearly/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dearly/floating_action_button.dart';
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           body: TabBarView(
             children: [
               MessageView(),
-              Icon(Icons.directions_transit),
+              CallLogsView(),
               Icon(Icons.directions_bike),
             ],
           ),

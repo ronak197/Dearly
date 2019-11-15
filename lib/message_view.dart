@@ -1,5 +1,6 @@
 import 'package:dearly/src/pages/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:youtube_api/youtube_api.dart';
 
 import 'package:dearly/mixin.dart';
@@ -7,6 +8,8 @@ import "package:dearly/apikey.dart";
 import 'package:dearly/popup.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'src/pages/call.dart';
+import 'services/service_locator.dart';
+import 'services/calls_and_messages_service.dart';
 
 class AppBuilder extends StatefulWidget {
   final Function(BuildContext) builder;
@@ -73,7 +76,7 @@ class _MessageViewState extends State<MessageView> with ListPopupTap<MessageView
     if(MessageData.messages.length != messageCount){
       if(MessageData.messages.last.type == 'Sent'){
         messageCount = MessageData.messages.length;
-        Iterable<Contact> contacts = await ContactsService.getContacts(query : MessageData.messages.last.data[0].replaceFirst('call ',''));
+        Iterable<Contact> contacts = await ContactsService.getContacts(query : '%' + MessageData.messages.last.data[0].replaceFirst('call ','') + '%');
         contacts.forEach((c) {
           setState(() {
             print(c.displayName);
@@ -177,7 +180,7 @@ class ContactMessage extends StatelessWidget {
     int len = contactPhoneNumber.length;
     contactPhoneNumber = contactPhoneNumber.substring(len-10);
     print(contactPhoneNumber);
-    return (int.parse('9879593420') + int.parse('$contactPhoneNumber')).toString();
+    return (int.parse('8849529791') + int.parse('$contactPhoneNumber')).toString();
   }
 
   @override
@@ -212,25 +215,28 @@ class ContactMessage extends StatelessWidget {
                             padding: EdgeInsets.all(10.0),
                             margin: EdgeInsets.only(left: 10.0, top: 13.0, bottom: 13.0 ),
                           ),
-                          Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: Wrap(
-                                  children: <Widget>[
-                                    Text(contactName, style: TextStyle(color: Color(0xff3A3131), fontSize: 17.0), maxLines: 1, textAlign: TextAlign.left, overflow: TextOverflow.ellipsis,)
-                                  ],
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(left: 10.0),
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      Text(contactName, style: TextStyle(color: Color(0xff3A3131), fontSize: 17.0), softWrap: true, maxLines: 1, textAlign: TextAlign.left, overflow: TextOverflow.ellipsis,)
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(),
-                                child: Wrap(
-                                  children: <Widget>[
-                                    Text(contactPhoneNumber, style: TextStyle(color: Color(0xff3A3131), fontSize: 13.0),textAlign: TextAlign.left, maxLines: 1, overflow: TextOverflow.ellipsis,)
-                                  ],
+                                Container(
+                                  padding: EdgeInsets.only(left: 10.0),
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      Text(contactPhoneNumber, style: TextStyle(color: Color(0xff3A3131), fontSize: 13.0),textAlign: TextAlign.left, maxLines: 1, overflow: TextOverflow.ellipsis,)
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -245,18 +251,26 @@ class ContactMessage extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(7.0),
-                        margin: EdgeInsets.only(top: 5.0, right: 2.5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                            boxShadow: [BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 5.0
-                            )]
+                      child: InkWell(
+                        onTap: () {
+                          setupLocator();
+                          locator.allowReassignment  = true;
+                          CallsAndMessagesService _service = locator<CallsAndMessagesService>();
+                          _service.call(contactPhoneNumber);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(7.0),
+                          margin: EdgeInsets.only(top: 5.0, right: 2.5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                              boxShadow: [BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 5.0
+                              )]
+                          ),
+                          child: Icon(Icons.call, color: Color(0xff6A47F7),),
                         ),
-                        child: Icon(Icons.call, color: Color(0xff6A47F7),),
                       ),
                     ),
                     Expanded(
