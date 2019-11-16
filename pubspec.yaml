@@ -30,6 +30,7 @@ dependencies:
   get_it: ^1.0.3+2
   call_log:
   intl:
+  provider: ^2.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -60,6 +61,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/mic_icon.png
+    - assets/walkthrough/flutter_onboarding_1.png
+    - assets/walkthrough/flutter_onboarding_2.png
+    - assets/walkthrough/flutter_onboarding_3.png
+    - assets/walkthrough/flutter_onboarding_4.png
 
 
   # An image as1set can refer to one or more resolution-specific "variants", see
@@ -84,6 +89,10 @@ flutter:
     - family: OpenSans
       fonts:
         - asset: assets/fonts/OpenSans-Regular.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
