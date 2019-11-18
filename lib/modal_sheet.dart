@@ -24,7 +24,6 @@ class _ListeningModalSheetContentsState extends State<ListeningModalSheetContent
 
   void initSpeechRecognizer() {
 
-    print('init start');
 
     _speechRecognition = new SpeechRecognition();
 
@@ -48,22 +47,19 @@ class _ListeningModalSheetContentsState extends State<ListeningModalSheetContent
           (result) => setState(() {_isAvailable = result; print('activation');}),
     );
 
-    print('init end');
   }
 
   void startListening(){
-
-    print('started Listening');
-    print('$_isAvailable,$_isListening');
+//
+//    print('started Listening');
+//    print('$_isAvailable,$_isListening');
 
     if (_isAvailable && !_isListening) {
       _speechRecognition
           .listen(locale: "en_US")
           .then((result) {
-        print('abcfd');
         resultText = result;
       });
-      print('abcd');
     }
   }
 
@@ -171,8 +167,8 @@ class _ListeningModalSheetContentsState extends State<ListeningModalSheetContent
                               onPressed: (){
                                 if(resultText!=""){
                                   Navigator.pop(context);
-                                  setState(() {
-                                    MessageData.messages.add(Message(data: [resultText], type: 'Sent'));
+                                  setState(()  {
+                                    MessageData.addMessage(resultText);
                                     AppBuilder.of(context).rebuild();
                                   });
                                 }

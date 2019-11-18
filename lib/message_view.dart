@@ -1,6 +1,7 @@
 import 'package:dearly/src/pages/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:youtube_api/youtube_api.dart';
 
 import 'package:dearly/mixin.dart';
@@ -51,45 +52,33 @@ class _MessageViewState extends State<MessageView> with ListPopupTap<MessageView
   List<YT_API> _ytResults;
   List<VideoItem> videoItem;
   String videoId;
-  int messageCount;
+  int checkedMessage;
 
   @override
   void initState() {
     _youtubeAPI = YoutubeAPI(apikey, type: "video", maxResults: 3);
     _ytResults = [];
     videoItem = [];
-    messageCount = MessageData.messages.length;
+    checkedMessage = MessageData.messages.length;
     super.initState();
   }
 
   Future<Null> checkNewMessage() async {
-    if(MessageData.messages.length != messageCount){
-      if(MessageData.messages.last.type == 'Sent'){
-          messageCount = MessageData.messages.length;
-          await callAPI(MessageData.messages.last.data[0].replaceFirst('play',''));
-      }
-    }
+    await callAPI(MessageData.messages.last.data[0].replaceFirst('play',''));
   }
 
   Future<Null> getContacts() async{
-    print('checking contacts');
-    if(MessageData.messages.length != messageCount){
-      if(MessageData.messages.last.type == 'Sent'){
-        messageCount = MessageData.messages.length;
-        Iterable<Contact> contacts = await ContactsService.getContacts(query : '%' + MessageData.messages.last.data[0].replaceFirst('call ','') + '%');
-        contacts.forEach((c) {
-          setState(() {
-            print(c.displayName);
-            MessageData.messages.add(Message(type: 'Call', data: ['${c.displayName}', '${c.phones.toList()[0].value}']));
-          });
-        });
-      }
-    }
+    Iterable<Contact> contacts = await ContactsService.getContacts(query : '%' + MessageData.messages.last.data[0].replaceFirst('call ','') + '%');
+    contacts.forEach((c){
+    setState(() {
+        MessageData.messages.add(Message(type: 'Call', data: ['${c.displayName}', '${c.phones.toList()[0].value}']));
+    });
+    });
   }
 
   Future<Null> callAPI(String query, {bool nextPage}) async {
     if (_ytResults.isNotEmpty) {
-      videoItem.clear();
+      videoItem = [];
     }
 
     if (nextPage == null) {
@@ -125,22 +114,6 @@ class _MessageViewState extends State<MessageView> with ListPopupTap<MessageView
     ));
   }
 
-  Widget getMessage(String type, int index, String firstMessage){
-      if(type == 'Sent'){
-        if(firstMessage.toLowerCase().startsWith('play')){
-          messageCount != MessageData.messages.length ? checkNewMessage() : Container();
-        } else if(firstMessage.toLowerCase().startsWith('call')){
-          messageCount != MessageData.messages.length ? getContacts() : Container();
-        }
-        return SentMessage(messageText: firstMessage, messageTime: '9:04 PM',);
-      } else if(type == 'Received') {
-        return ReceivedMessage(messageText: firstMessage, messageTime: '9:05 PM',);
-      } else if(type == 'Call'){
-        return ContactMessage(contactName: 'Ronak Jain', contactPhoneNumber: '9879593420',);
-      } else {
-        return VideoRecommendationMessage(videoItem: MessageData.messages[index].videoItems);
-      }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,20 +121,42 @@ class _MessageViewState extends State<MessageView> with ListPopupTap<MessageView
       padding: EdgeInsets.only(bottom: 100.0),
       itemCount: MessageData.messages.length,
       itemBuilder: (_, int index){
+
         if(MessageData.messages[index].type == 'Sent'){
-          if(MessageData.messages[index].data[0].toLowerCase().startsWith('play')){
-            messageCount != MessageData.messages.length ? checkNewMessage() : Container();
-          } else if(MessageData.messages[index].data[0].toLowerCase().startsWith('call')){
-            messageCount != MessageData.messages.length ? getContacts() : Container();
+//          if(MessageData.messages[index].data[0].toLowerCase().startsWith('call')){
+//            if(MessageData.lastCheckMessage != MessageData.lastSentMessage){
+//              MessageData.lastCheckMessage = MessageData.lastSentMessage;
+//              getContacts();
+//            }
+//          }
+//          else if(MessageData.messages[index].data[0].toLowerCase().startsWith('play')) {
+//            if(MessageData.lastCheckMessage != MessageData.lastSentMessage){
+//              MessageData.lastCheckMessage = MessageData.lastSentMessage;
+//              checkNewMessage();
+//            }
+//          }
+        if(MessageData.lastCheckMessage != MessageData.lastSentMessage && index == MessageData.lastSentMessage-1){
+          if(MessageData.messages[index].data[0].toLowerCase().startsWith('call')){
+              MessageData.lastCheckMessage = MessageData.lastSentMessage;
+              getContacts();
           }
+          else if(MessageData.messages[index].data[0].toLowerCase().startsWith('play')) {
+              MessageData.lastCheckMessage = MessageData.lastSentMessage;
+              checkNewMessage();
+          }
+        }
           return SentMessage(messageText: MessageData.messages[index].data[0], messageTime: '9:04 PM',);
-        } else if(MessageData.messages[index].type == 'Received') {
+        }
+        else if(MessageData.messages[index].type == 'Received') {
           return ReceivedMessage(messageText: MessageData.messages[index].data[0], messageTime: '9:05 PM',);
-        } else if(MessageData.messages[index].type == 'Call'){
+        }
+        else if(MessageData.messages[index].type == 'Call'){
           return ContactMessage(contactName: MessageData.messages[index].data[0], contactPhoneNumber: MessageData.messages[index].data[1],);
-        } else {
+        }
+        else {
           return VideoRecommendationMessage(videoItem: MessageData.messages[index].videoItems);
         }
+
       },
     );
   }
@@ -180,7 +175,7 @@ class ContactMessage extends StatelessWidget {
     int len = contactPhoneNumber.length;
     contactPhoneNumber = contactPhoneNumber.substring(len-10);
     print(contactPhoneNumber);
-    return (int.parse('8849529791') + int.parse('$contactPhoneNumber')).toString();
+    return (int.parse('9879593420') + int.parse('$contactPhoneNumber')).toString();
   }
 
   @override
@@ -325,10 +320,11 @@ class ReceivedMessage extends StatelessWidget {
         margin: EdgeInsets.only(left: 10.0, top: 10.0, right: MediaQuery.of(context).size.width * 0.4),
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: BorderRadius.all(Radius.circular(9.0)),
             boxShadow: [BoxShadow(
-                color: Colors.grey,
-                blurRadius: 5.0
+                color: Colors.black.withOpacity(0.16),
+                blurRadius: 6.0,
+              offset: Offset(0.0,3.0),
             )]
         ),
         child: Stack(
@@ -337,12 +333,12 @@ class ReceivedMessage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15.0, right: 20.0,top: 10.0, bottom: 30.0),
               child: Wrap(
                 children: <Widget>[
-                  Text(messageText, style: TextStyle(color: Color(0xff3A3131), fontSize: 14.0), maxLines: 6, overflow: TextOverflow.ellipsis,)
+                  Text(messageText, style: TextStyle(color: Color(0xff3A3131), fontSize: 16.0), maxLines: 6, overflow: TextOverflow.ellipsis,)
                 ],
               ),
             ),
             Positioned(
-              child: Text(messageTime, style: TextStyle(color: Color(0xff3A3131), fontSize: 12.0),),
+              child: Text(messageTime, style: TextStyle(color: Colors.grey, fontSize: 12.0),),
               right: 12.0,
               bottom: 7.0,
             ),
@@ -370,8 +366,9 @@ class SentMessage extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
             boxShadow: [BoxShadow(
-                color: Colors.grey,
-                blurRadius: 5.0
+              color: Colors.black.withOpacity(0.16),
+              blurRadius: 6.0,
+              offset: Offset(0.0,3.0),
             )]
         ),
         child: Stack(
@@ -380,12 +377,12 @@ class SentMessage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15.0, right: 20.0,top: 10.0, bottom: 30.0),
               child: Wrap(
                 children: <Widget>[
-                  Text(messageText, style: TextStyle(color: Color(0xff3A3131), fontSize: 14.0), maxLines: 6, overflow: TextOverflow.ellipsis,)
+                  Text(messageText, style: TextStyle(color: Color(0xff3A3131), fontSize: 16.0,), maxLines: 6, overflow: TextOverflow.ellipsis,)
                 ],
               ),
             ),
             Positioned(
-              child: Text(messageTime, style: TextStyle(color: Color(0xff3A3131), fontSize: 12.0),),
+              child: Text(messageTime, style: TextStyle(color: Colors.grey, fontSize: 12.0),),
               right: 12.0,
               bottom: 7.0,
             ),
@@ -435,11 +432,20 @@ class Message{
   Message({this.type,this.data,this.videoItems});
 }
 
-class MessageData{
+class MessageData extends _MessageViewState{
   static List<Message> messages = [
     Message(data: ['Hello Ramesh, I\'m Soneya'], type: 'Received'),
     Message(data: ['Hello Soneya'], type: 'Sent'),
   ];
+
+  static int lastSentMessage = 2;
+  static int lastCheckMessage = 2;
+
+  static void addMessage(String data){
+    messages.add(Message(data: [data], type: 'Sent'));
+    lastSentMessage = messages.length;
+  }
+
 }
 
 
@@ -459,8 +465,9 @@ class VideoRecommendationMessage extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
             boxShadow: [BoxShadow(
-                color: Colors.grey,
-                blurRadius: 5.0
+              color: Colors.black.withOpacity(0.16),
+              blurRadius: 6.0,
+              offset: Offset(0.0,3.0),
             )]
         ),
         child: Column(
@@ -468,7 +475,7 @@ class VideoRecommendationMessage extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 15.0, right: 20.0,top: 10.0, bottom: 20.0),
-              child: Text('Here are some Recommendations', style: TextStyle(color: Color(0xff3A3131), fontSize: 15.0), maxLines: 6, overflow: TextOverflow.ellipsis,)
+              child: Text('Here are some Recommendations', style: TextStyle(color: Color(0xff3A3131), fontSize: 16.0), maxLines: 6, overflow: TextOverflow.ellipsis,)
             ),
             videoItem[0],
             videoItem[1],
@@ -476,7 +483,7 @@ class VideoRecommendationMessage extends StatelessWidget {
             Container(
               padding: EdgeInsets.only(bottom: 7.0, right: 12.0),
               alignment: Alignment.bottomRight,
-              child: Text('9:05 PM', style: TextStyle(color: Color(0xff3A3131), fontSize: 12.0),),
+              child: Text('9:05 PM', style: TextStyle(color: Colors.grey, fontSize: 12.0),),
             ),
           ],
         ),

@@ -15,9 +15,6 @@ class _CallLogsViewState extends State<CallLogsView> {
 
   Future<Null> getCallEntries() async {
     entries = await CallLog.get();
-    entries.forEach((e){
-      print('${e.name},${e.number},${e.callType.index.toString()},${e.timestamp}');
-    });
     setState(() {
       entriesList = entries.toList();
       currentDate = DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(entriesList[0].timestamp));
