@@ -1,6 +1,6 @@
 # Dearly
 
-This project is a smart tourism application, which focuses on getting users their preferred destinations and hotels in their budget.
+This project is a chat based application for elderly people to make access of youtube videos, calling (audio/video) easier through a single click of a button.
 
 ## App Screenshots : 
 
